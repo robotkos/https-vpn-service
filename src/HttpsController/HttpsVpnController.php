@@ -9,7 +9,7 @@
 namespace HttpsController;
 
 use GuzzleHttp\ClientInterface;
-use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class HttpsVpnController
@@ -97,10 +97,10 @@ class HttpsVpnController
 
     /**
      * @param $link
-     * @return UriInterface
+     * @return ResponseInterface
      */
 
-    public function get($link): UriInterface
+    public function get($link): ResponseInterface
     {
         return $this->httpClient->get('http://localhost:5003/?get=' . $link);
     }
