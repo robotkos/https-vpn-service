@@ -15,12 +15,43 @@ class HttpsVpnController
      */
     private $httpClient;
 
+    /**
+     * @var array
+     */
+    private static $headers = [
+        'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0',
+        'Connection' => 'keep-alive',
+        'Upgrade-Insecure-Requests' => '1',
+    ];
 
     public function __construct(array $guzzleConfig)
     {
-        $this->httpClient = new \GuzzleHttp\Client($guzzleConfig);
+        $guzzleNewConfig = $this->getGuzzleConfiguration($guzzleConfig);
+        $this->httpClient = new \GuzzleHttp\Client($guzzleNewConfig);
     }
 
+    private function getGuzzleConfiguration(array $guzzleConfig): array
+    {
+        if (empty($guzzleConfig)) {
+            $guzzleConfig = [
+                'timeout' => 50,
+                'headers' => self::$headers,
+                'cookies' => true,
+                'expect' => false,
+                'verify' => false,
+                'http_errors' => false,
+                'debug' => false,
+                'allow_redirects' => true,
+
+//                'proxy' => 'tcp://localhost:8888'
+//                'curl' => [
+//                    CURLOPT_INTERFACE => 'tun0',
+//                ],
+            ];
+            return $guzzleConfig;
+        }
+        return $guzzleConfig;
+    }
     /**
      * @return ClientInterface
      */
