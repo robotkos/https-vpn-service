@@ -95,6 +95,11 @@ class HttpsVpnController
         return new \GuzzleHttp\Client($this->httpClient->getConfig());
     }
 
+    /**
+     * @param $link
+     * @return UriInterface
+     */
+
     public function get($link): UriInterface
     {
         return $this->httpClient->get('http://localhost:5003/?get=' . $link);
