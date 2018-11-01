@@ -16,7 +16,7 @@ class HttpsVpnController
     private $httpClient;
 
 
-    private function __construct(array $guzzleConfig)
+    public function __construct(array $guzzleConfig)
     {
         $this->httpClient = new \GuzzleHttp\Client($guzzleConfig);
     }
