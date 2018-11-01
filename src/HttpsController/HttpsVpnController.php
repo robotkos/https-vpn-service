@@ -9,12 +9,12 @@
 namespace HttpsController;
 
 use GuzzleHttp\ClientInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Class HttpsVpnController
  * @package HttpsController
  */
-
 class HttpsVpnController
 {
     /**
@@ -59,6 +59,7 @@ class HttpsVpnController
         }
         return $guzzleConfig;
     }
+
     /**
      * @return ClientInterface
      */
@@ -88,8 +89,14 @@ class HttpsVpnController
     /**
      * @return \GuzzleHttp\Client
      */
-    public function getVPNGuzzleClient(): \GuzzleHttp\Client{
+    public function getVPNGuzzleClient(): \GuzzleHttp\Client
+    {
         dump($this->httpClient->getConfig());
         return new \GuzzleHttp\Client($this->httpClient->getConfig());
+    }
+
+    public function get($link): UriInterface
+    {
+        return $this->httpClient->get('http://localhost:5003/?get=' . $link);
     }
 }
