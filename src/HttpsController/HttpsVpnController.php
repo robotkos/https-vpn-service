@@ -69,7 +69,7 @@ class HttpsVpnController
     /**
      * @return array|null
      */
-    private function getLiveDockerVPNLinks(): ?array
+    private function getLiveDockerVPNLinks(): ?string
     {
         $out = [];
         exec('docker ps -q | xargs docker inspect --format \'{{ .NetworkSettings.Ports }}\'', $out);
