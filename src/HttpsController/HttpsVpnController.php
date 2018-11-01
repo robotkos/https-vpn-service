@@ -5,9 +5,15 @@
  * Date: 01.11.18
  * Time: 10:54
  */
+
 namespace HttpsController;
 
 use GuzzleHttp\ClientInterface;
+
+/**
+ * Class HttpsVpnController
+ * @package HttpsController
+ */
 
 class HttpsVpnController
 {
