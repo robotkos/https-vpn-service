@@ -61,6 +61,25 @@ class HttpsVpnController
     }
 
     /**
+     * @return array|null
+     */
+    private function getLiveDockerVPNLinks():?array {
+        $out = [];
+        exec('docker ps -q | xargs docker inspect --format \'{{ .NetworkSettings.Ports }}\'', $out);
+        if  (!empty($out)){
+            $finish = [];
+            foreach ($out as $item) {
+                $flag = preg_match('/map\[80\/tcp\:\[\{127\.0\.0\.1 5.*?}]]/im', $item);
+                if  ($flag){
+                    $finish[] = str_replace(' ', ':', str_replace('}]]', '', str_replace('map[80/tcp:[{', '', $item)));
+                }
+            }
+            return $finish;
+        }
+        return null;
+    }
+
+    /**
      * @return ClientInterface
      */
     public function getHttpClient(): ClientInterface
@@ -91,7 +110,6 @@ class HttpsVpnController
      */
     public function getVPNGuzzleClient(): \GuzzleHttp\Client
     {
-        dump($this->httpClient->getConfig());
         return new \GuzzleHttp\Client($this->httpClient->getConfig());
     }
 
@@ -100,8 +118,13 @@ class HttpsVpnController
      * @return ResponseInterface
      */
 
-    public function get($link): ResponseInterface
+    public function get($link): ?ResponseInterface
     {
-        return $this->httpClient->get('http://localhost:5003/?get=' . $link);
+        $ips = $this->getLiveDockerVPNLinks();
+        if ($ips!==null){
+            $ip = array_rand($ips);
+            return $this->httpClient->get('http://'. $ips[$ip] .'/?get=' . $link);
+        }
+        return null;
     }
 }
