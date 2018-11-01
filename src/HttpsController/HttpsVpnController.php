@@ -23,6 +23,11 @@ class HttpsVpnController
     private $httpClient;
 
     /**
+     * @var string
+     */
+    private $proxyLink;
+
+    /**
      * @var array
      */
     private static $headers = [
@@ -31,10 +36,11 @@ class HttpsVpnController
         'Upgrade-Insecure-Requests' => '1',
     ];
 
-    public function __construct(array $guzzleConfig)
+    public function __construct(array $guzzleConfig = [])
     {
         $guzzleNewConfig = $this->getGuzzleConfiguration($guzzleConfig);
         $this->httpClient = new \GuzzleHttp\Client($guzzleNewConfig);
+        $this->proxyLink = $this->getLiveDockerVPNLinks();
     }
 
     private function getGuzzleConfiguration(array $guzzleConfig): array
@@ -63,18 +69,20 @@ class HttpsVpnController
     /**
      * @return array|null
      */
-    private function getLiveDockerVPNLinks():?array {
+    private function getLiveDockerVPNLinks(): ?array
+    {
         $out = [];
         exec('docker ps -q | xargs docker inspect --format \'{{ .NetworkSettings.Ports }}\'', $out);
-        if  (!empty($out)){
+        if (!empty($out)) {
             $finish = [];
             foreach ($out as $item) {
                 $flag = preg_match('/map\[80\/tcp\:\[\{127\.0\.0\.1 5.*?}]]/im', $item);
-                if  ($flag){
+                if ($flag) {
                     $finish[] = str_replace(' ', ':', str_replace('}]]', '', str_replace('map[80/tcp:[{', '', $item)));
                 }
             }
-            return $finish;
+            $ip = array_rand($finish);
+            return $finish[$ip];
         }
         return null;
     }
@@ -120,11 +128,7 @@ class HttpsVpnController
 
     public function get($link): ?ResponseInterface
     {
-        $ips = $this->getLiveDockerVPNLinks();
-        if ($ips!==null){
-            $ip = array_rand($ips);
-            return $this->httpClient->get('http://'. $ips[$ip] .'/?get=' . $link);
-        }
-        return null;
+        $ip = $this->proxyLink;
+        return $this->httpClient->get('http://' . $ip . '/?get=' . $link);
     }
 }
