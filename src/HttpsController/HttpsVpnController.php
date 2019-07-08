@@ -56,6 +56,7 @@ class HttpsVpnController
                 'debug' => false,
                 'allow_redirects' => true,
 
+
 //                'proxy' => 'tcp://localhost:8888'
 //                'curl' => [
 //                    CURLOPT_INTERFACE => 'tun0',
